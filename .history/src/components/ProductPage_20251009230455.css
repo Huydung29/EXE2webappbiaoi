@@ -1,0 +1,131 @@
+/* --- Thumbnail ảnh sản phẩm --- */
+.thumb-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  margin-right: 8px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+}
+.thumb-img:hover { border-color: #6c757d; transform: scale(1.05); }
+.thumb-img.active { border-color: #0d6efd; box-shadow: 0 0 6px rgba(13,110,253,0.4); }
+
+/* Ảnh chính */
+.main-img { 
+  width: 100%; 
+  height: 420px; /* hoặc 400-500px tuỳ ý */
+  max-height: 520px; 
+  object-fit: cover; /* đổi từ contain sang cover */
+  border-radius: 12px;
+  background: #f8fafc;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* --- Ảnh QR code --- */
+.qr-code {
+  max-width: 200px; height: auto; border: 1px solid #ddd;
+  padding: 5px; border-radius: 8px; transition: transform 0.2s ease;
+}
+.qr-code:hover { transform: scale(1.03); }
+
+/* =========================
+   Lưới & thẻ sản phẩm đi kèm
+   ========================= */
+
+/* Lưới quà tặng: 3 item / hàng desktop */
+.gift-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Thẻ quà tặng — dùng làm <label> để click cả thẻ */
+.gift-option {
+  position: relative;
+  background: #fff;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  padding: 10px;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+.gift-option:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.06); }
+.gift-option.active { border-color: #0d6efd !important; box-shadow: 0 0 0 3px rgba(13,110,253,0.15); background-color: #f7fbff; }
+
+/* Ẩn checkbox thật nhưng vẫn focus/keyboard được */
+.vh-checkbox {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Ô tick góc phải (đẹp + animate) */
+.gift-check {
+  position: absolute;
+  top: 8px; right: 10px;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid #cbd5e1; /* slate-300 */
+  background: #fff;
+  display: grid; place-items: center;
+  transition: all 0.18s ease;
+}
+
+/* Vòng sáng khi focus bàn phím */
+.gift-option:has(.vh-checkbox:focus-visible) .gift-check {
+  box-shadow: 0 0 0 4px rgba(13,110,253,0.2);
+  border-color: #0d6efd;
+}
+
+/* Khi chọn: đổi nền/viền ô tick */
+.gift-option.active .gift-check {
+  background: #0d6efd;
+  border-color: #0d6efd;
+}
+
+/* Checkmark SVG vẽ nét */
+.check-svg {
+  width: 16px; height: 16px;
+  stroke: #0d6efd; stroke-width: 3; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 22; stroke-dashoffset: 22; /* ẩn ban đầu */
+  transition: stroke 0.18s ease;
+}
+.gift-option.active .check-svg {
+  stroke: #fff;
+  animation: dash 250ms ease forwards;
+}
+@keyframes dash { to { stroke-dashoffset: 0; } }
+
+/* Nội dung trong thẻ */
+.gift-img { height: 70px; object-fit: contain; }
+.gift-name { font-size: 0.9rem; min-height: 38px; }
+
+/* Gợi ý style cho combo (nổi bật nhẹ) */
+.gift-option.combo { border-color: #ffc107; background-color: #fffbe6; }
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 992px) {
+  .gift-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .thumb-img { width: 70px; height: 70px; margin-right: 10px; }
+  .qr-code { max-width: 160px; }
+}
+@media (max-width: 576px) {
+  .gift-grid { grid-template-columns: 1fr; }
+  .thumb-img { width: 60px; height: 60px; }
+  .qr-code { max-width: 140px; }
+}
+/* Ảnh cover trong GuideDetail giữ tỉ lệ đẹp */
+.object-fit-cover { object-fit: cover; }
+
+/* Nền nhẹ cho block step */
+.bg-light-subtle { background: rgba(0,0,0,0.02); }

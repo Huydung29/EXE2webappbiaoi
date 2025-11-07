@@ -1,0 +1,215 @@
+/* ====== Tokens (có thể tinh chỉnh nhanh) ====== */
+:root {
+  --gd-primary: #0d6efd;       /* xanh primary Bootstrap */
+  --gd-primary-2: #6f42c1;     /* tím phụ */
+  --gd-bg: #ffffff;
+  --gd-text: #212529;
+  --gd-muted: #6c757d;
+  --gd-border: rgba(0,0,0,.08);
+  --gd-shadow: 0 8px 30px rgba(0,0,0,.08);
+  --gd-radius: 14px;
+}
+/* ====== Hero (breadcrumb + tiêu đề gradient chữ) ====== */
+.bg-gradient {
+  background: linear-gradient(135deg, #5eead4, #38bdf8); /* xanh baby pastel trẻ trung */
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1000px 400px at 80% -10%, rgba(255,255,255,.18), transparent),
+    radial-gradient(800px 400px at 10% 110%, rgba(255,255,255,.12), transparent);
+  pointer-events: none;
+}
+
+/* --- Breadcrumb --- */
+.guide-detail-page .breadcrumb .breadcrumb-item a {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+.guide-detail-page .breadcrumb .breadcrumb-item a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+.guide-detail-page .breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  color: rgba(255, 255, 255, 0.7);
+}
+.guide-detail-page .breadcrumb .active {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* --- Tiêu đề với chữ gradient --- */
+.guide-detail-page h1.display-6 {
+  background: linear-gradient(135deg, #f472b6, #fb923c); /* hồng → cam sáng */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+
+/* --- Subtitle --- */
+.guide-detail-page .lead {
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .guide-detail-page h1.display-6 {
+    font-size: 1.75rem;
+    letter-spacing: 0.3px;
+  }
+}
+
+
+/* chips trong hero (stats/tags) */
+.guide-detail-page .bg-gradient .badge {
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.14) !important;
+  color: #fff !important;
+  backdrop-filter: saturate(160%) blur(2px);
+}
+
+/* Nút hero */
+.guide-detail-page .bg-gradient .btn.btn-light {
+  color: var(--gd-primary);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: .5rem 1rem;
+  box-shadow: var(--gd-shadow);
+}
+
+/* ====== Card & bố cục ====== */
+.guide-detail-page .card {
+  border-radius: var(--gd-radius);
+  border: 1px solid var(--gd-border);
+  box-shadow: var(--gd-shadow);
+}
+.guide-detail-page .card .card-title,
+.guide-detail-page h5.fw-bold,
+.guide-detail-page h6.fw-bold {
+  letter-spacing: .2px;
+}
+
+/* Ảnh cover/video */
+.guide-detail-page .ratio > img {
+  object-fit: cover;
+  border-radius: 0; /* đã có border-radius ở card */
+}
+.guide-detail-page .ratio iframe {
+  border: 0;
+  border-radius: 0;
+}
+
+/* ====== “Thông tin nhanh” ====== */
+.guide-detail-page .card .badge.bg-body-tertiary {
+  background: #f4f6f8 !important;
+  color: var(--gd-muted) !important;
+  border-color: var(--gd-border) !important;
+}
+.guide-detail-page .card .btn.btn-primary {
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(13,110,253,.25);
+}
+.guide-detail-page .card .btn.btn-outline-primary {
+  border-radius: 12px;
+}
+.guide-detail-page .card img[alt="QR mua nhanh"] {
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  border-radius: 12px;
+}
+
+/* Meta tác giả/cập nhật */
+.guide-detail-page .card .small.text-muted {
+  color: #6b7280 !important; /* xám dễ đọc */
+}
+
+/* ====== Timeline Steps ====== */
+.timeline {
+  position: relative;
+  padding-left: 1rem;
+}
+.timeline:before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: rgba(13,110,253,.18);
+}
+.timeline-item {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+.timeline-dot {
+  position: absolute;
+  left: 2px; top: .55rem;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--gd-primary);
+  box-shadow: 0 0 0 4px rgba(13,110,253,.12);
+}
+.timeline-content {
+  background: var(--gd-bg);
+  border: 1px solid var(--gd-border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.04);
+}
+.timeline-content img {
+  border-radius: 10px;
+}
+
+/* ====== Modal Zoom ảnh ====== */
+.modal .modal-content {
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+.modal-backdrop.show {
+  backdrop-filter: blur(2px);
+}
+
+/* ====== Buttons: states & focus ====== */
+.btn-primary {
+  --bs-btn-bg: var(--gd-primary);
+  --bs-btn-border-color: var(--gd-primary);
+  --bs-btn-hover-bg: #0b5ed7;
+  --bs-btn-hover-border-color: #0a58ca;
+  --bs-btn-focus-shadow-rgb: 49,132,253;
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--gd-primary);
+  --bs-btn-border-color: rgba(13,110,253,.5);
+  --bs-btn-hover-bg: rgba(13,110,253,.08);
+  --bs-btn-hover-border-color: var(--gd-primary);
+}
+
+/* ====== Responsive tinh chỉnh ====== */
+@media (max-width: 991.98px) {
+  .guide-detail-page .card .card-body {
+    padding: 1rem 1rem;
+  }
+  .timeline-content {
+    padding: .875rem;
+  }
+}
+@media (min-width: 1200px) {
+  .guide-detail-page .container {
+    max-width: 1120px;
+  }
+}
+
+/* ====== Utility nhỏ ====== */
+.text-shadow { text-shadow: 0 2px 6px rgba(0,0,0,.25); }
