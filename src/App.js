@@ -79,6 +79,7 @@ export default function App() {
 
   return (
     <Router>
+      <Analytics />
       <Routes>
         {/* Trang chủ */}
         <Route path="/" element={<HomePage />} />
