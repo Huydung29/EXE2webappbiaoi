@@ -1,70 +1,56 @@
-# Getting Started with Create React App
+# Project Structure
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository is split into two separate parts:
 
-## Available Scripts
+- `frontend/`: React client app (CRA, proxy API → backend port mặc định `5000`)
+- `backend/`: Node.js + Express + MongoDB API
 
-In the project directory, you can run:
+## Run frontend
 
-### `npm start`
+```bash
+cd frontend
+npm install
+npm start
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Ứng chạy tại `http://localhost:3000`. Gọi API qua đường dẫn tương đối `/api/...` nhờ `proxy` trong `frontend/package.json`.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Run backend
 
-### `npm test`
+```bash
+cd backend
+npm install
+copy .env.example .env
+npm run dev
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+API lắng nghe cổng trong biến `PORT` (mặc định `5000`).
 
-### `npm run build`
+### Biến môi trường backend (`backend/.env`)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Biến | Mô tả |
+|------|--------|
+| `PORT` | Cổng HTTP (mặc định `5000`) |
+| `MONGODB_URI` | Chuỗi kết nối MongoDB |
+| `JWT_SECRET` | Khóa ký JWT (bắt buộc, đủ dài khi triển khai thật) |
+| `CLIENT_ORIGIN` | Origin CORS cho frontend (ví dụ `http://localhost:3000`) |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Tạo tài khoản admin
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Sau khi MongoDB chạy và file `.env` đã có `MONGODB_URI`:
 
-### `npm run eject`
+```bash
+cd backend
+npm run seed:admin
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Mặc định tạo/cập nhật admin `admin@example.com` / `admin123456` (đổi bằng `ADMIN_EMAIL`, `ADMIN_PASSWORD` trong môi trường nếu cần).
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### API đơn hàng (tóm tắt)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- `POST /api/orders/checkout` — tạo đơn từ giỏ, lưu ghi chú + snapshot họ tên/SĐT/địa chỉ từ hồ sơ.
+- `GET /api/orders/me` — đơn của user đăng nhập.
+- `GET /api/orders/:id` — chi tiết đơn (chủ đơn hoặc admin).
+- `PATCH /api/orders/:id/cancel` — hủy đơn `pending` (chủ đơn hoặc admin).
+- `GET /api/orders/admin`, `PATCH /api/orders/admin/:id/confirm` — danh sách và xác nhận đơn (admin).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

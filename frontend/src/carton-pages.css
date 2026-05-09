@@ -1,0 +1,588 @@
+/* ─── Trang trong shop — đồng bộ tone carton tái chế với Home ─── */
+
+:root {
+  --carton-bg-top: #fdfbf8;
+  --carton-bg-mid: #fffaf5;
+  --carton-cream: #fff8f0;
+  --carton-border: #f1e4d6;
+  --carton-border-strong: #e8d4c0;
+  --carton-text: #333;
+  --carton-muted: #6b5c4d;
+  --carton-accent: #ae672d;
+  --carton-accent-dark: #8f5f35;
+  --carton-shadow: rgba(135, 88, 48, 0.12);
+  --carton-shadow-hover: rgba(135, 88, 48, 0.2);
+}
+
+/* Nền + họa tiết nhẹ giấy carton */
+.carton-shell {
+  position: relative;
+  flex: 1;
+  min-height: 48vh;
+  padding-bottom: 40px;
+  background: linear-gradient(180deg, var(--carton-bg-top) 0%, var(--carton-bg-mid) 35%, #fff 100%);
+  overflow-x: hidden;
+}
+
+.carton-shell::before {
+  content: "";
+  position: absolute;
+  top: 4vh;
+  right: -6vw;
+  width: min(320px, 42vw);
+  height: min(260px, 36vh);
+  background: url("/asset/bia4.png") center / contain no-repeat;
+  opacity: 0.1;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.carton-shell::after {
+  content: "";
+  position: absolute;
+  bottom: 10vh;
+  left: -8vw;
+  width: min(280px, 38vw);
+  height: min(220px, 30vh);
+  background: url("/asset/bia2.png") center / contain no-repeat;
+  opacity: 0.08;
+  transform: rotate(18deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.carton-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.carton-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+}
+
+.carton-page-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--carton-accent);
+  margin-bottom: 8px;
+}
+
+.carton-page-title {
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
+  font-weight: 700;
+  color: var(--carton-text);
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.carton-page-desc {
+  color: var(--carton-muted);
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 640px;
+  margin-bottom: 24px;
+}
+
+/* Thẻ nội dung giống product-card trên Home */
+.carton-panel {
+  background: linear-gradient(180deg, #ffffff 0%, var(--carton-cream) 100%);
+  border: 1px solid var(--carton-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px var(--carton-shadow);
+  padding: 20px 22px;
+  transition: box-shadow 0.25s ease;
+}
+
+.carton-panel:hover {
+  box-shadow: 0 12px 28px var(--carton-shadow-hover);
+}
+
+.carton-panel + .carton-panel {
+  margin-top: 18px;
+}
+
+.carton-panel--compact {
+  padding: 14px 18px;
+}
+
+.carton-divider {
+  border: 0;
+  border-top: 1px solid var(--carton-border);
+  margin: 16px 0;
+}
+
+/* Form */
+.carton-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a4038;
+  margin-bottom: 6px;
+}
+
+.carton-input,
+.carton-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--carton-border-strong);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--carton-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.carton-input:focus,
+.carton-textarea:focus {
+  outline: none;
+  border-color: var(--carton-accent);
+  box-shadow: 0 0 0 3px rgba(174, 103, 45, 0.18);
+}
+
+.carton-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* Nút phụ — viền nâu */
+.carton-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--carton-accent-dark);
+  background: #fff;
+  border: 1px solid var(--carton-border-strong);
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.carton-btn-ghost:hover {
+  background: var(--carton-cream);
+  border-color: var(--carton-accent);
+  transform: translateY(-1px);
+}
+
+.carton-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #8f1f1f;
+  background: #fff5f5;
+  border: 1px solid #e9b6b6;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.carton-btn-danger:hover:not(:disabled) {
+  background: #ffe5e5;
+  transform: translateY(-1px);
+}
+
+.carton-btn-danger:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Trạng thái đơn */
+.carton-status {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.carton-status--pending {
+  background: #fff8e6;
+  color: #946200;
+  border: 1px solid #f5dc9a;
+}
+
+.carton-status--confirmed {
+  background: #e8f7ee;
+  color: #1d6b3a;
+  border: 1px solid #b8e0c8;
+}
+
+.carton-status--cancelled {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+/* Cảnh báo */
+.carton-alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
+}
+
+.carton-alert--danger {
+  background: #fff5f5;
+  border-color: #f5c2c7;
+  color: #842029;
+}
+
+.carton-alert--warn {
+  background: #fff8e6;
+  border-color: #ffe69c;
+  color: #664d03;
+}
+
+.carton-alert--ok {
+  background: #ecfdf3;
+  border-color: #a6e9c5;
+  color: #0f5731;
+}
+
+/* Toolbar cửa hàng */
+.carton-shop-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--carton-border);
+}
+
+.carton-shop-toolbar p {
+  margin: 0;
+  color: var(--carton-muted);
+  font-size: 14px;
+}
+
+.carton-select {
+  padding: 10px 36px 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--carton-border-strong);
+  border-radius: 10px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23875648'%3E%3Cpath d='M6 8L1 3h10z'/%3E%3C/svg%3E") right 12px center no-repeat;
+  appearance: none;
+  cursor: pointer;
+  color: var(--carton-text);
+}
+
+.carton-select:focus {
+  outline: none;
+  border-color: var(--carton-accent);
+  box-shadow: 0 0 0 3px rgba(174, 103, 45, 0.18);
+}
+
+/* Lưới sản phẩm (Shop list) — đồng bộ product-card Home */
+.carton-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.carton-shop-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(180deg, #ffffff, var(--carton-cream));
+  border: 1px solid var(--carton-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px var(--carton-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.carton-shop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px var(--carton-shadow-hover);
+}
+
+.carton-shop-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: #f9f6f2;
+}
+
+.carton-shop-card h4 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--carton-text);
+  margin: 14px 16px 6px;
+  line-height: 1.35;
+}
+
+.carton-shop-card .carton-shop-price {
+  margin: 0 16px 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--carton-accent-dark);
+}
+
+@media (max-width: 992px) {
+  .carton-shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .carton-shop-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chi tiết sản phẩm — phủ Bootstrap trong khối */
+.carton-detail-page .breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.carton-detail-page .breadcrumb-item a {
+  color: var(--carton-accent);
+  text-decoration: none;
+}
+
+.carton-detail-page .breadcrumb-item a:hover {
+  text-decoration: underline;
+}
+
+.carton-detail-page .breadcrumb-item.active {
+  color: var(--carton-muted);
+}
+
+.carton-detail-page .card {
+  background: linear-gradient(180deg, #ffffff 0%, var(--carton-cream) 100%);
+  border: 1px solid var(--carton-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px var(--carton-shadow);
+}
+
+.carton-detail-page .thumb-img.active {
+  border-color: var(--carton-accent) !important;
+  box-shadow: 0 0 0 2px rgba(174, 103, 45, 0.35);
+}
+
+.carton-detail-page .gift-option.active {
+  border-color: var(--carton-accent) !important;
+  box-shadow: 0 0 0 3px rgba(174, 103, 45, 0.18);
+  background-color: var(--carton-cream);
+}
+
+.carton-detail-page .gift-option:has(.vh-checkbox:focus-visible) .gift-check {
+  box-shadow: 0 0 0 4px rgba(174, 103, 45, 0.22);
+  border-color: var(--carton-accent);
+}
+
+.carton-detail-page .gift-option.active .gift-check {
+  background: var(--carton-accent);
+  border-color: var(--carton-accent);
+}
+
+.carton-detail-page .btn-primary {
+  background-color: var(--carton-accent-dark);
+  border-color: var(--carton-accent-dark);
+}
+
+.carton-detail-page .btn-primary:hover {
+  background-color: #744722;
+  border-color: #744722;
+}
+
+.carton-detail-page .btn-outline-primary {
+  color: var(--carton-accent-dark);
+  border-color: var(--carton-accent-dark);
+}
+
+.carton-detail-page .btn-outline-primary:hover {
+  background: var(--carton-cream);
+  color: #5c3d26;
+}
+
+.carton-detail-page .btn-success {
+  background-image: url("/asset/bia5.png");
+  background-size: 140px 56px;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+  color: #1a1a1a;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+.carton-detail-page .btn-success:hover {
+  filter: brightness(1.06);
+}
+
+.carton-detail-page .btn-info {
+  background: var(--carton-cream);
+  border: 1px solid var(--carton-border-strong);
+  color: var(--carton-accent-dark);
+}
+
+.carton-detail-page .btn-info:hover {
+  background: #ffeecf;
+  border-color: var(--carton-accent);
+  color: #5c3d26;
+}
+
+.carton-detail-page .btn-warning {
+  background: #9a8165;
+  border-color: #8a7360;
+  color: #fff;
+}
+
+.carton-detail-page .btn-warning:hover {
+  filter: brightness(1.08);
+}
+
+.carton-detail-page .btn-outline-secondary {
+  border-color: var(--carton-border-strong);
+  color: var(--carton-muted);
+}
+
+.carton-detail-page .btn-outline-secondary:hover {
+  background: var(--carton-cream);
+  border-color: var(--carton-accent);
+  color: var(--carton-text);
+}
+
+.carton-detail-page .table thead {
+  background: var(--carton-cream);
+}
+
+.carton-detail-page .lead.text-danger,
+.carton-detail-page .text-danger.fw-bold {
+  color: var(--carton-accent-dark) !important;
+}
+
+/* Guide cards */
+.carton-guide-grid .carton-guide-card {
+  background: linear-gradient(180deg, #ffffff, var(--carton-cream));
+  border: 1px solid var(--carton-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px var(--carton-shadow);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.carton-guide-grid .carton-guide-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px var(--carton-shadow-hover);
+}
+
+.carton-guide-grid .btn.btn-primary {
+  background-color: transparent !important;
+  background-image: url("/asset/bia5.png") !important;
+  background-size: 100% 52px !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  border: none !important;
+  color: #1a1a1a !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.65);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.carton-guide-grid .btn.btn-primary:hover {
+  filter: brightness(1.06);
+}
+
+/* Empty / lỗi trang */
+.carton-empty {
+  text-align: center;
+  padding: 48px 20px 64px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.carton-empty-code {
+  font-size: clamp(3rem, 10vw, 4.5rem);
+  font-weight: 800;
+  color: var(--carton-accent-dark);
+  opacity: 0.85;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.carton-empty h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--carton-text);
+  margin: 0 0 10px;
+}
+
+.carton-empty p {
+  color: var(--carton-muted);
+  margin-bottom: 22px;
+  font-size: 15px;
+}
+
+.carton-empty-visual {
+  width: min(200px, 50vw);
+  height: min(140px, 36vw);
+  margin: 0 auto 24px;
+  background: url("/asset/bia6.png") center / contain no-repeat;
+  opacity: 0.35;
+}
+
+/* Hàng nút */
+.carton-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.carton-order-row {
+  padding: 16px 18px;
+}
+
+.carton-order-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.carton-order-meta {
+  font-size: 12px;
+  color: var(--carton-muted);
+  margin-bottom: 4px;
+}
+
+.carton-order-link {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--carton-accent-dark);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.carton-order-link:hover {
+  color: var(--carton-accent);
+  text-decoration: underline;
+}
