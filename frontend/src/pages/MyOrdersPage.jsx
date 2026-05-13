@@ -5,7 +5,10 @@ import { useAuth } from "../context/AuthContext";
 
 function statusClass(status) {
   if (status === "pending") return "carton-status carton-status--pending";
+  if (status === "paid") return "carton-status carton-status--pending";
   if (status === "confirmed") return "carton-status carton-status--confirmed";
+  if (status === "shipped") return "carton-status carton-status--shipped";
+  if (status === "delivered") return "carton-status carton-status--delivered";
   return "carton-status carton-status--cancelled";
 }
 

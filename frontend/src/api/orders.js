@@ -23,6 +23,15 @@ export async function confirmOrder(token, orderId) {
   return data.order;
 }
 
+export async function advanceOrderStatus(token, orderId, status) {
+  const data = await apiFetch(`/api/orders/admin/${orderId}/status`, {
+    token,
+    method: "PATCH",
+    body: { status },
+  });
+  return data.order;
+}
+
 export async function getOrder(token, orderId) {
   const data = await apiFetch(`/api/orders/${orderId}`, { token });
   return data.order;
@@ -35,4 +44,3 @@ export async function cancelOrder(token, orderId) {
   });
   return data.order;
 }
-

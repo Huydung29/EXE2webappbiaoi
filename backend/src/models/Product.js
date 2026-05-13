@@ -10,6 +10,8 @@ const ProductSchema = new mongoose.Schema(
     image: { type: String, required: true, trim: true },
     images: { type: [String], default: [] },
     price: { type: Number, required: true, min: 0 },
+    stock: { type: Number, required: true, min: 0, default: 100 },
+    tags: { type: [String], default: [] },
     concept: { type: String, trim: true, default: "" },
     badges: { type: [String], default: [] },
     guideLink: { type: String, trim: true, default: "" },
@@ -22,4 +24,3 @@ const ProductSchema = new mongoose.Schema(
 );
 
 export const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
-

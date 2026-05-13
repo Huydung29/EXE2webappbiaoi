@@ -1,8 +1,13 @@
 import { apiFetch } from "./client";
 
-export async function fetchProducts() {
-  const data = await apiFetch("/api/products");
-  return data.products || [];
+export async function fetchProducts(params = {}) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && String(v).trim() !== "") qs.set(k, String(v));
+  });
+  const q = qs.toString();
+  const data = await apiFetch(`/api/products${q ? `?${q}` : ""}`);
+  return data;
 }
 
 export async function fetchProductById(id) {
@@ -27,4 +32,3 @@ export async function updateProduct(token, productId, payload) {
 export async function deleteProduct(token, productId) {
   return apiFetch(`/api/products/${productId}`, { token, method: "DELETE" });
 }
-

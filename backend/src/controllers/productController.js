@@ -2,7 +2,7 @@ import {
   createProduct,
   deleteProduct,
   getProductByProductId,
-  listProducts,
+  listProductsPaged,
   updateProduct,
 } from "../services/productService.js";
 import { productPayloadSchema, productUpdateSchema } from "../validators/productValidators.js";
@@ -13,8 +13,17 @@ function sendError(res, error) {
 
 export async function getProducts(req, res) {
   try {
-    const products = await listProducts();
-    return res.json({ products });
+    const { q, minPrice, maxPrice, tag, sort, page, limit } = req.query;
+    const data = await listProductsPaged({
+      q,
+      minPrice,
+      maxPrice,
+      tag,
+      sort: sort || "newest",
+      page,
+      limit,
+    });
+    return res.json(data);
   } catch (error) {
     return sendError(res, error);
   }
@@ -65,4 +74,3 @@ export async function adminDeleteProduct(req, res) {
     return sendError(res, error);
   }
 }
-

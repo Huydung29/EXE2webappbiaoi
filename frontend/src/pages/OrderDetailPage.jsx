@@ -5,8 +5,20 @@ import { useAuth } from "../context/AuthContext";
 
 function statusClass(status) {
   if (status === "pending") return "carton-status carton-status--pending";
+  if (status === "paid") return "carton-status carton-status--pending";
   if (status === "confirmed") return "carton-status carton-status--confirmed";
+  if (status === "shipped") return "carton-status carton-status--shipped";
+  if (status === "delivered") return "carton-status carton-status--delivered";
   return "carton-status carton-status--cancelled";
+}
+
+function formatDt(iso) {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleString("vi-VN");
+  } catch {
+    return String(iso);
+  }
 }
 
 export default function OrderDetailPage() {
@@ -19,27 +31,22 @@ export default function OrderDetailPage() {
   const [actionError, setActionError] = useState("");
   const [cancelling, setCancelling] = useState(false);
 
-  useEffect(() => {
+  const reload = () => {
     if (!token || !id) return;
-    let cancelled = false;
     setLoading(true);
     setError("");
     getOrder(token, id)
-      .then((o) => {
-        if (!cancelled) setOrder(o);
-      })
+      .then(setOrder)
       .catch((e) => {
-        if (!cancelled) {
-          setOrder(null);
-          setError(e?.message || "Không tải được đơn hàng.");
-        }
+        setOrder(null);
+        setError(e?.message || "Không tải được đơn hàng.");
       })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, id]);
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -84,6 +91,8 @@ export default function OrderDetailPage() {
   }
 
   const customer = order.userId && typeof order.userId === "object" ? order.userId : null;
+  const timeline = Array.isArray(order.timeline) ? order.timeline : [];
+  const canUserCancel = !isAdmin && ["pending", "paid"].includes(order.status);
 
   return (
     <div className="carton-inner">
@@ -94,10 +103,29 @@ export default function OrderDetailPage() {
         </Link>
       </div>
       <h1 className="carton-page-title">Đơn #{String(order._id).slice(-8)}</h1>
-      <p className="carton-page-desc">
+      <p className="carton-page-desc d-flex flex-wrap align-items-center gap-2">
         <span className={statusClass(order.status)}>{order.status}</span>
-        <span style={{ marginLeft: 12 }}>Tổng: {formatVND(order.subtotal)}</span>
+        <span>Tổng: {formatVND(order.subtotal)}</span>
       </p>
+
+      <div className="carton-panel carton-panel--compact mb-3">
+        <h2 className="h6 fw-bold mb-3">Tiến trình đơn hàng</h2>
+        <ul className="list-unstyled mb-0 order-timeline">
+          {timeline.length === 0 ? (
+            <li className="text-muted small">Chưa có mốc thời gian.</li>
+          ) : (
+            timeline.map((step) => (
+              <li key={step.key + String(step.at)} className="order-timeline-item">
+                <span className="order-timeline-dot" aria-hidden />
+                <div>
+                  <div className="fw-semibold">{step.label}</div>
+                  <div className="small text-muted">{formatDt(step.at)}</div>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
 
       <div className="carton-panel carton-panel--compact mb-3">
         <div className="carton-order-meta">Mã đầy đủ</div>
@@ -157,7 +185,7 @@ export default function OrderDetailPage() {
         </div>
       ) : null}
 
-      {order.status === "pending" ? (
+      {canUserCancel ? (
         <div className="mt-3">
           <button type="button" className="carton-btn-danger" disabled={cancelling} onClick={handleCancel}>
             {cancelling ? "Đang hủy..." : "Hủy đơn"}

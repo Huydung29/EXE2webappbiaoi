@@ -1,13 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { cancelOrder, confirmOrder, getAdminOrders } from "../api/orders";
+import { advanceOrderStatus, getAdminOrders } from "../api/orders";
 import { useAuth } from "../context/AuthContext";
 
 function statusClass(status) {
   if (status === "pending") return "carton-status carton-status--pending";
+  if (status === "paid") return "carton-status carton-status--pending";
   if (status === "confirmed") return "carton-status carton-status--confirmed";
+  if (status === "shipped") return "carton-status carton-status--shipped";
+  if (status === "delivered") return "carton-status carton-status--delivered";
   return "carton-status carton-status--cancelled";
 }
+
+const ADMIN_STEPS = {
+  pending: [
+    { status: "paid", label: "Đã thanh toán (mock)" },
+    { status: "confirmed", label: "Xác nhận & trừ kho" },
+    { status: "cancelled", label: "Hủy đơn" },
+  ],
+  paid: [
+    { status: "confirmed", label: "Xác nhận & trừ kho" },
+    { status: "cancelled", label: "Hủy đơn" },
+  ],
+  confirmed: [
+    { status: "shipped", label: "Đang giao" },
+    { status: "cancelled", label: "Hủy & hoàn kho" },
+  ],
+  shipped: [
+    { status: "delivered", label: "Đã giao" },
+    { status: "cancelled", label: "Hủy & hoàn kho" },
+  ],
+  delivered: [],
+  cancelled: [],
+};
 
 export default function AdminOrdersPage() {
   const { token, isAuthenticated, isAdmin } = useAuth();
@@ -41,7 +66,7 @@ export default function AdminOrdersPage() {
       <div className="carton-page-eyebrow">Admin</div>
       <h1 className="carton-page-title">Quản lý đơn hàng</h1>
       <p className="carton-page-desc">
-        Xác nhận hoặc hủy các đơn đang chờ — khách nhận sản phẩm DIY carton tái chế.
+        Luồng: chờ → thanh toán mock (tuỳ chọn) → xác nhận (trừ kho) → đang giao → đã giao. Hủy trước khi giao sẽ hoàn kho nếu đã trừ.
       </p>
 
       {loading && <p className="carton-page-desc">Đang tải...</p>}
@@ -75,32 +100,22 @@ export default function AdminOrdersPage() {
                 <Link to={`/orders/${o._id}`} className="carton-order-link">
                   {o._id}
                 </Link>
-                {o.status === "pending" ? (
-                  <div className="carton-actions mt-3">
+                <div className="carton-actions mt-3 flex-wrap">
+                  {(ADMIN_STEPS[o.status] || []).map((step) => (
                     <button
+                      key={step.status}
                       type="button"
-                      className="btn btn-shop btn-sm"
+                      className={step.status === "cancelled" ? "carton-btn-danger" : "btn btn-shop btn-sm"}
                       onClick={async () => {
-                        await confirmOrder(token, o._id);
+                        if (step.status === "cancelled" && !window.confirm("Hủy đơn này?")) return;
+                        await advanceOrderStatus(token, o._id, step.status);
                         load();
                       }}
                     >
-                      Xác nhận đơn
+                      {step.label}
                     </button>
-                    <button
-                      type="button"
-                      className="carton-btn-danger"
-                      style={{ padding: "8px 14px", fontSize: 13 }}
-                      onClick={async () => {
-                        if (!window.confirm("Hủy đơn này?")) return;
-                        await cancelOrder(token, o._id);
-                        load();
-                      }}
-                    >
-                      Hủy đơn
-                    </button>
-                  </div>
-                ) : null}
+                  ))}
+                </div>
               </div>
             ))
           )}

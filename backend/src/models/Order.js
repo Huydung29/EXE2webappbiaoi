@@ -18,19 +18,24 @@ const OrderSchema = new mongoose.Schema(
     subtotal: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
+      enum: ["pending", "paid", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
       index: true,
     },
+    /** Đã trừ kho khi chuyển sang confirmed */
+    stockCommitted: { type: Boolean, default: false },
     note: { type: String, trim: true, default: "" },
     shippingName: { type: String, trim: true, default: "" },
     shippingPhone: { type: String, trim: true, default: "" },
     shippingAddress: { type: String, trim: true, default: "" },
+    paidAt: { type: Date, default: null },
     confirmedAt: { type: Date, default: null },
     confirmedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    shippedAt: { type: Date, default: null },
+    deliveredAt: { type: Date, default: null },
+    cancelledAt: { type: Date, default: null },
   },
   { timestamps: true }
 );
 
 export const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
-

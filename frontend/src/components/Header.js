@@ -103,6 +103,14 @@ export default function Header() {
                     >
                       Hồ sơ
                     </Link>
+                    <Link
+                      role="menuitem"
+                      className="nav-account-item"
+                      to="/notifications"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Thông báo
+                    </Link>
                     {isAdmin ? (
                       <>
                         <div className="nav-account-divider" />
@@ -122,6 +130,14 @@ export default function Header() {
                           onClick={() => setMenuOpen(false)}
                         >
                           Sản phẩm (Admin)
+                        </Link>
+                        <Link
+                          role="menuitem"
+                          className="nav-account-item nav-account-item--admin"
+                          to="/admin/reviews"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          Đánh giá (Admin)
                         </Link>
                       </>
                     ) : null}

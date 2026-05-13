@@ -7,6 +7,8 @@ import { authRouter } from "./routes/auth.js";
 import { cartRouter } from "./routes/cart.js";
 import { productsRouter } from "./routes/products.js";
 import { ordersRouter } from "./routes/orders.js";
+import { reviewsRouter } from "./routes/reviews.js";
+import { notificationsRouter } from "./routes/notifications.js";
 import { requireAuth } from "./middleware/auth.js";
 import { ensureProductsSeeded } from "./services/productService.js";
 
@@ -30,6 +32,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", requireAuth, cartRouter);
 app.use("/api/orders", ordersRouter);
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/notifications", notificationsRouter);
 
 await connectDb(env.mongoUri);
 await ensureProductsSeeded();

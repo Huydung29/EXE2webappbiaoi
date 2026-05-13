@@ -11,8 +11,17 @@ const initialForm = {
   description: "",
   image: "",
   price: "",
+  stock: "100",
+  tags: "carton, 4-10",
   model: "",
 };
+
+function parseTags(s) {
+  return String(s || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
 
 export default function AdminProductsPage() {
   const { token, isAuthenticated, isAdmin } = useAuth();
@@ -22,8 +31,8 @@ export default function AdminProductsPage() {
   const [message, setMessage] = useState("");
 
   const load = async () => {
-    const data = await fetchProducts();
-    setProducts(data);
+    const data = await fetchProducts({ limit: 200, page: 1 });
+    setProducts(data.products || []);
   };
 
   useEffect(() => {
@@ -31,7 +40,7 @@ export default function AdminProductsPage() {
   }, []);
 
   const title = useMemo(
-    () => (editingId ? `Cap nhat san pham #${editingId}` : "Them san pham moi"),
+    () => (editingId ? `Cập nhật sản phẩm #${editingId}` : "Thêm sản phẩm mới"),
     [editingId]
   );
 
@@ -40,10 +49,17 @@ export default function AdminProductsPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    const tags = parseTags(form.tags);
     const payload = {
-      ...form,
       productId: Number(form.productId),
+      name: form.name,
+      shortName: form.shortName,
+      description: form.description,
+      image: form.image,
       price: Number(form.price),
+      stock: Number(form.stock || 0),
+      tags,
+      model: form.model,
     };
     if (editingId) {
       await updateProduct(token, editingId, {
@@ -52,12 +68,14 @@ export default function AdminProductsPage() {
         description: payload.description,
         image: payload.image,
         price: payload.price,
+        stock: payload.stock,
+        tags: payload.tags,
         model: payload.model,
       });
-      setMessage("Da cap nhat san pham.");
+      setMessage("Đã cập nhật sản phẩm.");
     } else {
       await createProduct(token, payload);
-      setMessage("Da them san pham moi.");
+      setMessage("Đã thêm sản phẩm mới.");
     }
     setForm(initialForm);
     setEditingId(null);
@@ -69,31 +87,41 @@ export default function AdminProductsPage() {
       <div className="carton-page-eyebrow">Admin</div>
       <h1 className="carton-page-title">Quản lý sản phẩm</h1>
       <p className="carton-page-desc">
-        Thêm hoặc chỉnh sửa mô hình carton trong cửa hàng — giữ đồng bộ ID và slug model với trang chi tiết / AR.
+        Tồn kho và tag dùng cho lọc cửa hàng (ví dụ carton, 4-10, steam).
       </p>
       <div className="admin-products-layout">
         <form className="admin-product-form" onSubmit={onSubmit}>
           <h3>{title}</h3>
           <input
-            placeholder="ID san pham"
+            placeholder="ID sản phẩm"
             value={form.productId}
             disabled={Boolean(editingId)}
             onChange={(e) => setForm((s) => ({ ...s, productId: e.target.value }))}
           />
           <input
-            placeholder="Ten san pham"
+            placeholder="Tên sản phẩm"
             value={form.name}
             onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
           />
           <input
-            placeholder="Ten ngan"
+            placeholder="Tên ngắn"
             value={form.shortName}
             onChange={(e) => setForm((s) => ({ ...s, shortName: e.target.value }))}
           />
           <input
-            placeholder="Gia"
+            placeholder="Giá"
             value={form.price}
             onChange={(e) => setForm((s) => ({ ...s, price: e.target.value }))}
+          />
+          <input
+            placeholder="Tồn kho"
+            value={form.stock}
+            onChange={(e) => setForm((s) => ({ ...s, stock: e.target.value }))}
+          />
+          <input
+            placeholder="Tags (cách nhau bởi dấu phẩy)"
+            value={form.tags}
+            onChange={(e) => setForm((s) => ({ ...s, tags: e.target.value }))}
           />
           <input
             placeholder="Model slug"
@@ -101,17 +129,17 @@ export default function AdminProductsPage() {
             onChange={(e) => setForm((s) => ({ ...s, model: e.target.value }))}
           />
           <input
-            placeholder="Anh cover URL"
+            placeholder="Ảnh cover URL"
             value={form.image}
             onChange={(e) => setForm((s) => ({ ...s, image: e.target.value }))}
           />
           <textarea
-            placeholder="Mo ta ngan"
+            placeholder="Mô tả ngắn"
             value={form.description}
             onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
           />
           <div className="admin-product-actions">
-            <button type="submit">{editingId ? "Luu cap nhat" : "Them moi"}</button>
+            <button type="submit">{editingId ? "Lưu cập nhật" : "Thêm mới"}</button>
             {editingId && (
               <button
                 type="button"
@@ -121,7 +149,7 @@ export default function AdminProductsPage() {
                   setForm(initialForm);
                 }}
               >
-                Huy
+                Hủy
               </button>
             )}
           </div>
@@ -134,7 +162,10 @@ export default function AdminProductsPage() {
               <img src={p.image} alt={p.name} />
               <div className="admin-product-content">
                 <h4>{p.name}</h4>
-                <p>#{p.productId} - {p.price?.toLocaleString("vi-VN")}đ</p>
+                <p>
+                  #{p.productId} — {p.price?.toLocaleString("vi-VN")}₫ — kho: {p.stock ?? "—"}
+                </p>
+                <p className="small text-muted">{(p.tags || []).join(", ") || "—"}</p>
                 <div className="admin-card-actions">
                   <button
                     type="button"
@@ -147,11 +178,13 @@ export default function AdminProductsPage() {
                         description: p.description || "",
                         image: p.image || "",
                         price: String(p.price || ""),
+                        stock: String(p.stock ?? 100),
+                        tags: (p.tags || []).join(", "),
                         model: p.model || "",
                       });
                     }}
                   >
-                    Sua
+                    Sửa
                   </button>
                   <button
                     type="button"
@@ -161,7 +194,7 @@ export default function AdminProductsPage() {
                       await load();
                     }}
                   >
-                    Xoa
+                    Xóa
                   </button>
                 </div>
               </div>
@@ -172,4 +205,3 @@ export default function AdminProductsPage() {
     </div>
   );
 }
-

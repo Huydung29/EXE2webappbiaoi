@@ -7,8 +7,8 @@ export default function Products() {
   const [productList, setProductList] = useState([]);
 
   useEffect(() => {
-    fetchProducts()
-      .then((products) => setProductList(products))
+    fetchProducts({ limit: 100, page: 1 })
+      .then((res) => setProductList(res.products || []))
       .catch(() => setProductList([]));
   }, []);
 

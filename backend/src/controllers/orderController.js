@@ -3,6 +3,7 @@ import {
   cancelOrderForViewer,
   checkoutOrder,
   confirmOrder,
+  advanceOrderStatus,
   getOrderForViewer,
   listAllOrders,
   listMyOrders,
@@ -10,6 +11,10 @@ import {
 
 const checkoutSchema = z.object({
   note: z.string().trim().max(500).optional(),
+});
+
+const advanceSchema = z.object({
+  status: z.enum(["paid", "confirmed", "shipped", "delivered", "cancelled"]),
 });
 
 function sendError(res, error) {
@@ -54,6 +59,17 @@ export async function adminConfirmOrder(req, res) {
   }
 }
 
+export async function adminAdvanceOrder(req, res) {
+  const parsed = advanceSchema.safeParse(req.body || {});
+  if (!parsed.success) return res.status(400).json({ error: "Invalid input" });
+  try {
+    const order = await advanceOrderStatus(req.params.id, req.user.id, parsed.data.status);
+    return res.json({ order });
+  } catch (error) {
+    return sendError(res, error);
+  }
+}
+
 export async function getOrderDetail(req, res) {
   try {
     const order = await getOrderForViewer(req.params.id, req.user.id, req.user.role);
@@ -71,4 +87,3 @@ export async function cancelOrderRequest(req, res) {
     return sendError(res, error);
   }
 }
-

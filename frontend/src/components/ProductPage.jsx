@@ -7,6 +7,7 @@ import ARQRCode from "../components/ARQRCode";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { fetchProductById } from "../api/products";
+import { fetchProductReviews, postReview } from "../api/reviews";
 
 /** ====== DATA (đổ theo nội dung bạn cung cấp) ====== */
 const productList = [
@@ -146,32 +147,41 @@ const giftOptions = [
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const { addItem } = useCart();
 
   const [product, setProduct] = useState(null);
+  const [loadReady, setLoadReady] = useState(false);
   const [mainImage, setMainImage] = useState("");
   const [selectedGifts, setSelectedGifts] = useState([]);
   const [adding, setAdding] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [reviewMsg, setReviewMsg] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     const productId = Number(id);
     async function loadProduct() {
+      setLoadReady(false);
       try {
         const fromApi = await fetchProductById(productId);
         if (cancelled) return;
         setProduct({ ...fromApi, id: fromApi.productId });
         setSelectedGifts([]);
         if (fromApi?.images?.length) setMainImage(fromApi.images[0]);
-        else setMainImage("");
+        else setMainImage(fromApi.image || "");
       } catch {
         if (cancelled) return;
         const found = productList.find((p) => p.id === productId) || null;
         setProduct(found);
         setSelectedGifts([]);
         if (found?.images?.length) setMainImage(found.images[0]);
-        else setMainImage("");
+        else setMainImage(found?.image || "");
+      } finally {
+        if (!cancelled) setLoadReady(true);
       }
     }
     loadProduct();
@@ -180,7 +190,19 @@ export default function ProductPage() {
     };
   }, [id]);
 
-  const formatVND = (n) => (n || 0).toLocaleString("vi-VN") + "₫";
+  useEffect(() => {
+    const pid = product?.productId ?? product?.id;
+    if (!pid) return;
+    fetchProductReviews(pid)
+      .then(setReviews)
+      .catch(() => setReviews([]));
+  }, [product]);
+
+  const gallery = useMemo(() => {
+    if (!product) return [];
+    const arr = product.images?.length ? product.images : [product.image];
+    return (arr || []).filter(Boolean);
+  }, [product]);
 
   const accessoriesTotal = useMemo(
     () => selectedGifts.reduce((sum, g) => sum + (g?.priceDelta || 0), 0),
@@ -191,6 +213,8 @@ export default function ProductPage() {
     if (!product) return 0;
     return product.price + accessoriesTotal;
   }, [product, accessoriesTotal]);
+
+  const formatVND = (n) => (n || 0).toLocaleString("vi-VN") + "₫";
 
   const handleImgError = (e) => {
     if (!e.target.dataset.fallback) {
@@ -221,6 +245,10 @@ export default function ProductPage() {
       return;
     }
     if (!product) return;
+    if (product.stock !== undefined && product.stock !== null && product.stock < 1) {
+      window.alert("Sản phẩm đang hết hàng.");
+      return;
+    }
     setAdding(true);
     try {
       await addItem({
@@ -238,6 +266,14 @@ export default function ProductPage() {
       setAdding(false);
     }
   };
+
+  if (!loadReady) {
+    return (
+      <div className="carton-inner carton-detail-page">
+        <p className="carton-page-desc">Đang tải sản phẩm...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -270,7 +306,7 @@ export default function ProductPage() {
           {/* Ảnh sản phẩm */}
           <div className="col-lg-6 d-flex flex-column flex-md-row">
             <div className="d-flex flex-row flex-md-column me-md-3 mb-3 mb-md-0">
-              {product.images.map((img, idx) => (
+              {gallery.map((img, idx) => (
                 <img
                   key={idx}
                   src={img}
@@ -303,6 +339,11 @@ export default function ProductPage() {
           <div className="col-lg-6">
             <h1 className="h3 fw-bold">{product.name}</h1>
             <p className="text-muted mb-2">{product.description}</p>
+            {product.stock !== undefined && product.stock !== null ? (
+              <p className={`small fw-semibold ${product.stock > 0 ? "text-success" : "text-danger"}`}>
+                Kho: {product.stock > 0 ? `còn ${product.stock} sản phẩm` : "Hết hàng"}
+              </p>
+            ) : null}
 
             {/* Giá tổng hợp */}
             <div className="mb-2">
@@ -440,9 +481,9 @@ export default function ProductPage() {
                 type="button"
                 className="btn btn-success btn-lg"
                 onClick={handleAddToCart}
-                disabled={adding}
+                disabled={adding || (product.stock !== undefined && product.stock !== null && product.stock < 1)}
               >
-                {adding ? "Đang thêm..." : "Thêm vào giỏ"}
+                {adding ? "Đang thêm..." : product.stock === 0 ? "Hết hàng" : "Thêm vào giỏ"}
               </button>
               <Link to={product.guideLink} className="btn btn-info btn-lg text-white">
                  Xem hướng dẫn {product.shortName}
@@ -458,6 +499,76 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="card mt-4 p-4 shadow-sm">
+        <h3 className="h5 fw-bold pb-2 border-bottom">Đánh giá</h3>
+        {reviews.length === 0 ? (
+          <p className="text-muted small mb-0">Chưa có đánh giá được duyệt.</p>
+        ) : (
+          <ul className="list-unstyled mb-3">
+            {reviews.map((r) => (
+              <li key={r._id} className="mb-2 pb-2 border-bottom">
+                <strong>{r.userId?.name || "Khách"}</strong>
+                <span className="text-warning ms-2">{"★".repeat(r.rating)}</span>
+                {r.comment ? <p className="mb-0 small mt-1">{r.comment}</p> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+        {isAuthenticated ? (
+          <form
+            className="mt-2"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!product?.productId && !product?.id) return;
+              setReviewBusy(true);
+              setReviewMsg("");
+              try {
+                await postReview(token, product.productId || product.id, {
+                  rating: reviewRating,
+                  comment: reviewComment.trim(),
+                });
+                setReviewMsg("Đã gửi đánh giá — chờ admin duyệt.");
+                setReviewComment("");
+              } catch (err) {
+                setReviewMsg(err?.message || "Không gửi được đánh giá.");
+              } finally {
+                setReviewBusy(false);
+              }
+            }}
+          >
+            <div className="mb-2">
+              <label className="form-label small">Số sao</label>
+              <select
+                className="form-select form-select-sm w-auto"
+                value={reviewRating}
+                onChange={(e) => setReviewRating(Number(e.target.value))}
+              >
+                {[5, 4, 3, 2, 1].map((n) => (
+                  <option key={n} value={n}>
+                    {n} sao
+                  </option>
+                ))}
+              </select>
+            </div>
+            <textarea
+              className="form-control mb-2"
+              rows={3}
+              placeholder="Nhận xét (tuỳ chọn)"
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+            />
+            <button type="submit" className="btn btn-outline-primary btn-sm" disabled={reviewBusy}>
+              {reviewBusy ? "Đang gửi..." : "Gửi đánh giá"}
+            </button>
+            {reviewMsg ? <p className="small text-muted mt-2 mb-0">{reviewMsg}</p> : null}
+          </form>
+        ) : (
+          <p className="small text-muted mb-0">
+            <Link to="/login">Đăng nhập</Link> để gửi đánh giá.
+          </p>
+        )}
       </div>
 
       {/* Chi tiết & QR */}

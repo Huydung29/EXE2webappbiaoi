@@ -14,7 +14,7 @@ const guides = {
       "Khoá các tab vào khe tương ứng; ấn chặt cho khít.",
       "Tô vảy/hoa văn theo ý thích; có thể dán sticker.",
     ],
-    arLink: "/ar/khung-long",
+    arLink: "/ar?model=dinosaur",
   },
 
   "xe-tang": {
@@ -47,7 +47,7 @@ const guides = {
         img: "/asset/huongdan-xetang-b4.png",
       },
     ],
-    arLink: "/ar/xe-tang",
+    arLink: "/ar?model=tank",
   },
 
   "may-bay": {
@@ -92,7 +92,7 @@ const guides = {
         img: "/asset/huongdan-maybay-b6.jpg",
       },
     ],
-    arLink: "/ar/may-bay",
+    arLink: "/ar?model=airplane",
   },
 };
 

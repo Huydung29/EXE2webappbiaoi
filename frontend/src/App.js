@@ -4,6 +4,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
+  useParams,
 } from "react-router-dom";
 
 import Header from "./components/Header";
@@ -26,12 +28,19 @@ import MyOrdersPage from "./pages/MyOrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminProductsPage from "./pages/AdminProductsPage";
+import AdminReviewsPage from "./pages/AdminReviewsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ForbiddenPage from "./pages/ForbiddenPage";
+import NotificationsPage from "./pages/NotificationsPage";
 
 import "./App.css";
 import "./carton-pages.css";
 import ARRedirect from "./pages/ARRedirect";
+
+function ARLegacyPathRedirect() {
+  const { model } = useParams();
+  return <Navigate to={`/ar?model=${encodeURIComponent(model || "")}`} replace />;
+}
 
 // --- Layout helpers ---
 function HomePage() {
@@ -135,6 +144,7 @@ export default function App() {
           }
         />
         <Route path="/profile" element={<WithShell><ProfilePage /></WithShell>} />
+        <Route path="/notifications" element={<WithShell><NotificationsPage /></WithShell>} />
         <Route path="/orders/:id" element={<WithShell><OrderDetailPage /></WithShell>} />
         <Route path="/orders" element={<WithShell><MyOrdersPage /></WithShell>} />
         <Route
@@ -147,9 +157,11 @@ export default function App() {
         />
         <Route path="/admin/orders" element={<WithShell><AdminOrdersPage /></WithShell>} />
         <Route path="/admin/products" element={<WithShell><AdminProductsPage /></WithShell>} />
+        <Route path="/admin/reviews" element={<WithShell><AdminReviewsPage /></WithShell>} />
 
-        {/* Route trung gian mở AR (tự nhận diện iOS/Android) */}
-        <Route path="/ar/:model" element={<ARRedirect />} />
+        {/* AR: ?model=dinosaur|tank|airplane — file .usdz / .glb trong /public/models */}
+        <Route path="/ar" element={<ARRedirect />} />
+        <Route path="/ar/:model" element={<ARLegacyPathRedirect />} />
 
         {/* Redirect mẫu (nếu muốn đưa / về 1 sản phẩm cụ thể, bỏ nếu không cần) */}
         {/* <Route path="/" element={<Navigate to="/products/1" replace />} /> */}
