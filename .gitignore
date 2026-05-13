@@ -8,7 +8,7 @@ backend/node_modules
 # env / secrets
 backend/.env
 .env
-
+backend/.env.example
 # unrelated tooling bundled under public asset by mistake
 frontend/public/asset/MiniTool Partition Wizard*/
 frontend/public/asset/MiniTool*.zip
